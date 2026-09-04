@@ -1,0 +1,31 @@
+services:
+    users-py:
+        build: ./users-server
+        command: python3 manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./users-server:/app
+        ports:
+            - 3010:8000
+        depends_on:
+            - auth-db
+
+    auth-db:
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: auth
+        volumes:
+            - auth-data:/var/lib/postgresql
+    chat-db:
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: chat
+        volumes:
+            - chat-data:/var/lib/postgresql
+
+volumes:
+    auth-data:
+    chat-data:
