@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+    const socket = useRef<WebSocket | null>(null);
     const [messages, setMessages] = useState([
         {
             name: "Hissam",
@@ -25,14 +26,38 @@ export default function Home() {
         },
     ]);
 
+    useEffect(() => {
+        socket.current = new WebSocket(process.env.NEXT_PUBLIC_CHAT_SERVER!);
+        socket.current.onmessage = (event) => {
+            console.log("Received message");
+            const message = JSON.parse(event.data);
+
+            setMessages((prev) => [...prev, message]);
+        };
+        return () => {
+            socket.current?.close();
+        };
+    }, []);
+
     const [message, setMessage] = useState("");
     const [debugName, setDebugName] = useState("");
 
     const handleEnterMessage = () => {
+        console.log("Sending");
+        if (!socket.current || socket.current.readyState !== WebSocket.OPEN) {
+            alert("Still connecting");
+            return;
+        }
         const newMessage = {
             name: debugName || "Hissam",
             content: message,
         };
+        socket.current?.send(
+            JSON.stringify({
+                name: debugName || "Hissam",
+                content: message,
+            }),
+        );
         setMessages((prev) => [...prev, newMessage]);
         setMessage("");
     };
@@ -42,7 +67,7 @@ export default function Home() {
             <div className="flex-1 p-3 flex flex-col gap-1 justify-end border border-gray-600">
                 {messages.map((message) => (
                     <div
-                        key={message.content}
+                        key={`${message.content}+${new Date().toISOString()}`}
                         className={`${message.name === "Hissam" ? "self-end" : "self-start"}
                           
                           max-w-100
