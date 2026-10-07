@@ -8,9 +8,23 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-09-21",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "WEBSOCKET_HIBERNATION_SERVER",
+				"class_name": "WebSocketHibernationServer",
+			},
+		],
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["WebSocketHibernationServer"],
+		},
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
