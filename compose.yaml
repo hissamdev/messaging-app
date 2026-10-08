@@ -1,4 +1,21 @@
 services:
+    users-db:
+        container_name: messaging-app-users
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: users
+        volumes:
+            - users-data:/var/lib/postgresql
+    chat-db:
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: chat
+        volumes:
+            - chat-data:/var/lib/postgresql
     users-py:
         build: ./users-server
         command: python3 manage.py runserver 0.0.0.0:8000
@@ -17,15 +34,8 @@ services:
             POSTGRES_DB: auth
         volumes:
             - auth-data:/var/lib/postgresql
-    chat-db:
-        image: postgres
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: password
-            POSTGRES_DB: chat
-        volumes:
-            - chat-data:/var/lib/postgresql
 
 volumes:
+    users-data:
     auth-data:
     chat-data:
