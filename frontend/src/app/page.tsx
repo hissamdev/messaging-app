@@ -27,12 +27,13 @@ export default function Home() {
     ]);
 
     useEffect(() => {
-        socket.current = new WebSocket(process.env.NEXT_PUBLIC_CHAT_SERVER!);
+        socket.current = new WebSocket(
+            `${process.env.NEXT_PUBLIC_CHAT_SERVER!}/ws?channel=1234`,
+        );
         socket.current.onmessage = (event) => {
-            console.log("Received message");
-            const message = JSON.parse(event.data);
+            const receivedMessage = JSON.parse(event.data);
 
-            setMessages((prev) => [...prev, message]);
+            setMessages((prev) => [...prev, receivedMessage]);
         };
         return () => {
             socket.current?.close();
