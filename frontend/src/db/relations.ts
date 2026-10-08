@@ -12,8 +12,17 @@ export const relations = defineRelations(schema, (r) => ({
             to: r.users.id,
         }),
         receiver: r.one.users({
-            from: r.friendRequests.senderId,
+            from: r.friendRequests.receiverId,
             to: r.users.id,
+        }),
+    },
+    directMessages: {
+        participants: r.many.dmParticipants(),
+    },
+    dmParticipants: {
+        dm: r.one.directMessages({
+            from: r.dmParticipants.dmId,
+            to: r.directMessages.id,
         }),
     },
 }));

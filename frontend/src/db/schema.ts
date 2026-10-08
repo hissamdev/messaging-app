@@ -1,7 +1,8 @@
 import * as p from "drizzle-orm/pg-core";
+import { uuid } from "zod";
 
 export const users = p.pgTable("users", {
-    id: p.uuid("id").primaryKey(),
+    id: p.uuid("id").primaryKey().defaultRandom(),
     username: p.text("username").unique().notNull(),
 });
 
@@ -14,6 +15,22 @@ export const friendRequests = p.pgTable("friend_requests", {
         .references(() => users.id),
     receiverId: p
         .uuid("receiver_id")
+        .notNull()
+        .references(() => users.id),
+});
+
+export const directMessages = p.pgTable("direct_messages", {
+    id: p.uuid("id").primaryKey().defaultRandom(),
+});
+
+export const dmParticipants = p.pgTable("dm_participants", {
+    id: p.serial("id").primaryKey(),
+    dmId: p
+        .uuid("dm_id")
+        .notNull()
+        .references(() => directMessages.id),
+    userId: p
+        .uuid("user_id")
         .notNull()
         .references(() => users.id),
 });
