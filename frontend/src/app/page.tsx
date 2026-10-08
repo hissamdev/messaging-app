@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-export default function Home() {
+export default function Chat() {
     const socket = useRef<WebSocket | null>(null);
     const [messages, setMessages] = useState([
         {
