@@ -1,11 +1,15 @@
 "use server";
 
+import { drizzle } from "drizzle-orm/node-postgres";
 import { z } from "zod";
+import { friendRequests, users } from "../db/schema";
 
 export type FormState = {
     success: boolean;
     message: string;
 };
+
+const db = drizzle(process.env.DATABASE_URL!);
 
 export async function sendRequest(prevState: FormState, formData: FormData) {
     const rawUsername = formData.get("username") as string;
@@ -19,6 +23,12 @@ export async function sendRequest(prevState: FormState, formData: FormData) {
             message: safeUsername.error.issues[0].message,
         };
     }
+
+    try {
+        // const alreadyFriends = await db.select().from();
+
+        await db.select().from(users);
+    } catch (err) {}
 
     return {
         success: true,

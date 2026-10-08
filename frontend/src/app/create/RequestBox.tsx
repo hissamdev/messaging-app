@@ -1,10 +1,11 @@
 "use client";
 
 import { sendRequest } from "@/src/actions/friendRequests";
+import { createUser } from "@/src/actions/userActions";
 import React, { useActionState, useState } from "react";
 
 export default function RequestBox() {
-    const [state, formAction] = useActionState(sendRequest, {
+    const [state, formAction] = useActionState(createUser, {
         success: true,
         message: "",
     });

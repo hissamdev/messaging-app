@@ -19,6 +19,19 @@ export const friendRequests = p.pgTable("friend_requests", {
         .references(() => users.id),
 });
 
+export const friendships = p.pgTable("friendships", {
+    id: p.serial("id").primaryKey(),
+    initiatorId: p
+        .uuid("initiator_id")
+        .notNull()
+        .references(() => users.id),
+    recipientId: p
+        .uuid("recipient_id")
+        .notNull()
+        .references(() => users.id),
+    createdAt: p.timestamp().defaultNow().notNull(),
+});
+
 export const directMessages = p.pgTable("direct_messages", {
     id: p.uuid("id").primaryKey().defaultRandom(),
 });
