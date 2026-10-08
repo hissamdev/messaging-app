@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import { defineConfig } from "drizzle-kit";
+import * as schema from "./src/db/schema";
 
 config({ path: ".env" });
 

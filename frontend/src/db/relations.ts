@@ -32,7 +32,7 @@ export const relations = defineRelations(schema, (r) => ({
         participants: r.many.dmParticipants(),
     },
     dmParticipants: {
-        dm: r.one.directMessages({
+        dm: r.many.directMessages({
             from: r.dmParticipants.dmId,
             to: r.directMessages.id,
         }),
