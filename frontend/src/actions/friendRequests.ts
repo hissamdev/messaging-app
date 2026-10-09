@@ -16,7 +16,7 @@ export type FormState = {
     message: string;
 };
 
-const db = drizzle(process.env.DATABASE_URL!);
+const db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL!);
 
 export async function sendRequest(prevState: FormState, formData: FormData) {
     const rawUsername = formData.get("username") as string;

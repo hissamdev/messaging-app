@@ -12,7 +12,7 @@ export default function RequestBox() {
     return (
         <form
             action={formAction}
-            className="w-150 h-full border border-gray-700 rounded-3xl flex flex-col items-center"
+            className="w-150 h-1/2 border border-gray-700 rounded-3xl flex flex-col items-center"
         >
             Add your friend
             <input
