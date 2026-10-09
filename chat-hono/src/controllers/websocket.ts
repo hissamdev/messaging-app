@@ -75,7 +75,7 @@ export class WebSocketHibernationServer extends DurableObject {
         reason: string,
         wasClean: boolean,
     ) {
-        ws.close(code, reason);
+        // ws.close(code, reason);
         this.sessions.delete(ws);
     }
 }
