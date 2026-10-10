@@ -23,7 +23,7 @@ const db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL!, {
 export async function getDms() {
     const ourId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
 
-    const parts = await db.query.directMessages.findMany({
+    const dmNested = await db.query.directMessages.findMany({
         where: {
             RAW: (dms) => sql`exists(
                 ${db.select().from(dmParticipants).where(eq(dmParticipants.userId, ourId))}
@@ -33,12 +33,13 @@ export async function getDms() {
             participants: {
                 with: { user: true },
             },
+            messages: true,
         },
     });
 
     return {
         success: true,
         message: "Fetched dms successfully",
-        data: parts,
+        data: dmNested,
     };
 }

@@ -1,5 +1,4 @@
 import * as p from "drizzle-orm/pg-core";
-import { uuid } from "zod";
 
 export const users = p.pgTable("users", {
     id: p.uuid("id").primaryKey().defaultRandom(),
@@ -46,4 +45,14 @@ export const dmParticipants = p.pgTable("dm_participants", {
         .uuid("user_id")
         .notNull()
         .references(() => users.id),
+});
+
+export const messages = p.pgTable("messages", {
+    id: p.uuid("id").primaryKey().defaultRandom(),
+    channelId: p.uuid().notNull(),
+    userId: p
+        .uuid()
+        .notNull()
+        .references(() => users.id),
+    content: p.text().notNull().default(""),
 });

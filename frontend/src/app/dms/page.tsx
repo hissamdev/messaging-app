@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import RequestBox from "./RequestBox";
 import { DMPartUser, getDms } from "@/src/actions/uiActions";
+import Link from "next/link";
 
 export default function Home() {
     const [dms, setDms] = useState<any[]>([]);
+    const userId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
     useEffect(() => {
         const load = async () => {
             const dms = await getDms();
@@ -21,10 +23,16 @@ export default function Home() {
                 <div className="mt-4 w-150 h-1/2 border border-gray-700 rounded-3xl flex flex-col items-center">
                     {dms.map((dm: DMPartUser) => (
                         <div key={dm.id} className="text-white">
-                            {dm.id}
-                            <div>yo mama</div>
-
-                            <div>{dm.participants.length.toString()} hi</div>
+                            <Link
+                                href={`/dms/${dm.id}`}
+                                className="block px-3 py-1.5 border rounded-2xl"
+                            >
+                                {dm.participants.map(
+                                    (participant) =>
+                                        participant.user.id !== userId &&
+                                        participant.user.username,
+                                )}
+                            </Link>
                         </div>
                     ))}
                 </div>

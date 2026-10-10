@@ -8,6 +8,7 @@ export const relations = defineRelations(schema, (r) => ({
         initiatedFriendships: r.many.friendships({ alias: "initiated" }),
         receivedFriendships: r.many.friendships({ alias: "received" }),
         participant: r.many.dmParticipants(),
+        messages: r.many.messages({ alias: "userAlias" }),
     },
     friendRequests: {
         sender: r.one.users({
@@ -35,6 +36,7 @@ export const relations = defineRelations(schema, (r) => ({
     },
     directMessages: {
         participants: r.many.dmParticipants(),
+        messages: r.many.messages({ alias: "dmAlias" }),
     },
     dmParticipants: {
         participants: r.one.directMessages({
@@ -44,6 +46,19 @@ export const relations = defineRelations(schema, (r) => ({
         user: r.one.users({
             from: r.dmParticipants.userId,
             to: r.users.id,
+        }),
+    },
+    messages: {
+        dm: r.one.directMessages({
+            from: r.messages.channelId,
+            to: r.directMessages.id,
+            alias: "dmAlias",
+        }),
+        user: r.one.users({
+            from: r.messages.userId,
+            to: r.users.id,
+            alias: "userAlias",
+            optional: false,
         }),
     },
 }));

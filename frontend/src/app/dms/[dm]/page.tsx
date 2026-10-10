@@ -1,11 +1,14 @@
 "use client";
 
+import { getMessages, storeMessage } from "@/src/actions/messageActions";
+import { users } from "@/src/db/schema";
 import { use, useEffect, useRef, useState } from "react";
 
 type Chat = {
     userId: string;
     channelId: string;
-    message: string;
+    content: string;
+    user: typeof users.$inferSelect;
 };
 
 export default function DirectMessage({
@@ -18,8 +21,14 @@ export default function DirectMessage({
 
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState<Chat[]>([]);
+    const [sending, setSending] = useState(false); // UI state
 
     useEffect(() => {
+        const loadMessages = async () => {
+            const fetchedMessages = await getMessages(dm);
+            if (!fetchedMessages) return;
+            setChat(fetchedMessages);
+        };
         let timer: ReturnType<typeof setTimeout>;
 
         const connect = () => {
@@ -37,6 +46,7 @@ export default function DirectMessage({
             //     timer = setTimeout(connect, 2000);
             // };
         };
+        loadMessages();
         connect();
         return () => {
             console.log("Checking");
@@ -47,17 +57,24 @@ export default function DirectMessage({
     }, []);
 
     const userId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
-    const handleSend = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleSend = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             const payload = {
                 userId,
                 channelId: dm,
-                message,
+                content: message,
+                user: {
+                    id: userId,
+                    username: "usernameHere",
+                },
             };
             const stringified = JSON.stringify(payload);
-            wsRef.current.send(stringified);
             setChat((prev) => [...prev, payload]);
+            setSending(true);
+            wsRef.current.send(stringified);
+            await storeMessage(userId, message, dm);
+            setSending(false);
             setMessage("");
         }
     };
@@ -69,7 +86,14 @@ export default function DirectMessage({
                     <div className="h-full flex">
                         <div className="mt-auto">
                             {chat.map((c, idx) => (
-                                <p key={idx}>{c.message}</p>
+                                <p
+                                    key={idx}
+                                    style={{
+                                        color: sending ? "#FFFFFFCC" : "white",
+                                    }}
+                                >
+                                    {c.content} {c.user?.username}
+                                </p>
                             ))}
                         </div>
                     </div>
