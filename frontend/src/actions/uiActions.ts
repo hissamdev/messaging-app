@@ -3,11 +3,11 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { and, eq, exists, inArray, sql } from "drizzle-orm";
 import { relations } from "../db/relations";
-import { dmParticipants, users } from "../db/schema";
+import { dmParticipants, user } from "../db/schema";
 import { directMessages } from "../db/schema";
 type DirectMessages = typeof directMessages.$inferSelect;
 type Participants = typeof dmParticipants.$inferSelect;
-type UserType = typeof users.$inferSelect;
+type UserType = typeof user.$inferSelect;
 
 export type DMPartUser = DirectMessages & {
     participants: Participants &
@@ -21,7 +21,7 @@ const db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL!, {
 });
 
 export async function getDms() {
-    const ourId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
+    const ourId = "PWBXNDvTDPWe0mfG5ZfXH5FL6ZGKjV0I";
 
     const dmNested = await db.query.directMessages.findMany({
         where: {

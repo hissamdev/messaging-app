@@ -7,7 +7,7 @@ import {
     dmParticipants,
     friendRequests,
     friendships,
-    users,
+    user,
 } from "../db/schema";
 import { and, eq, or } from "drizzle-orm";
 
@@ -31,13 +31,13 @@ export async function sendRequest(prevState: FormState, formData: FormData) {
         };
     }
 
-    const ourId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
+    const ourId = "PWBXNDvTDPWe0mfG5ZfXH5FL6ZGKjV0I";
 
     try {
         const userExists = await db
             .select()
-            .from(users)
-            .where(eq(users.username, safeUsername.data));
+            .from(user)
+            .where(eq(user.username, safeUsername.data));
         if (!userExists[0]) {
             return {
                 success: false,

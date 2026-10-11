@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Home() {
     const [dms, setDms] = useState<any[]>([]);
-    const userId = "bfb633b2-9352-4bd9-b8af-6df58bbfaa74";
+    const userId = "PWBXNDvTDPWe0mfG5ZfXH5FL6ZGKjV0I";
     useEffect(() => {
         const load = async () => {
             const dms = await getDms();

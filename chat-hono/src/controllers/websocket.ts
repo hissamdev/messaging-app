@@ -1,6 +1,14 @@
 import { DurableObject } from "cloudflare:workers";
 import { Context } from "hono";
 
+type User = {
+    id: string;
+    username: string;
+    dispalyName: string;
+    email: string;
+    createdAt: string;
+};
+
 export async function websocketController(
     c: Context<{ Bindings: CloudflareBindings }>,
 ) {
@@ -14,6 +22,20 @@ export async function websocketController(
     const channelId = c.req.query("channel");
     if (!channelId) {
         return c.text("Missing channel id", 400);
+    }
+
+    const res = await fetch("http://localhost:3000/api/chat/auth");
+    if (!res.ok)
+        return c.json({
+            success: false,
+            message: "Fetch failed: Failure to verify auth",
+        });
+    const parsed = await res.json();
+    if (!parsed) {
+        return c.json({
+            success: false,
+            message: "Unauthorized",
+        });
     }
 
     let stub = c.env.WEBSOCKET_HIBERNATION_SERVER.getByName(channelId);

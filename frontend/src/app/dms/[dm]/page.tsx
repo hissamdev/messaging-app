@@ -1,14 +1,17 @@
 "use client";
 
 import { getMessages, storeMessage } from "@/src/actions/messageActions";
-import { users } from "@/src/db/schema";
+import { user } from "@/src/db/schema";
+import { authClient } from "@/src/lib/auth-client";
+import { WsResponse } from "@/src/types/generalTypes";
+import { useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 
 type Chat = {
-    userId: string;
+    id: string;
     channelId: string;
     content: string;
-    user: typeof users.$inferSelect;
+    user: typeof user.$inferSelect;
 };
 
 export default function DirectMessage({
@@ -22,8 +25,17 @@ export default function DirectMessage({
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState<Chat[]>([]);
     const [sending, setSending] = useState(false); // UI state
+    const router = useRouter();
 
     useEffect(() => {
+        const checkAuth = async () => {
+            const { data: session, error } = await authClient.getSession();
+            if (!session) {
+                console.log(error?.message);
+                router.push("/dms");
+            }
+        };
+
         const loadMessages = async () => {
             const fetchedMessages = await getMessages(dm);
             if (!fetchedMessages) return;
@@ -38,14 +50,15 @@ export default function DirectMessage({
             );
 
             wsRef.current.onmessage = (wsResponse: MessageEvent) => {
-                const parsedWs: Chat = JSON.parse(wsResponse.data);
-                setChat((prev) => [...prev, parsedWs]);
+                const parsedWs: WsResponse = JSON.parse(wsResponse.data);
+                // setChat((prev) => [...prev, parsedWs]);
             };
 
             // wsRef.current.onclose = () => {
             //     timer = setTimeout(connect, 2000);
             // };
         };
+        checkAuth();
         loadMessages();
         connect();
         return () => {
@@ -61,16 +74,11 @@ export default function DirectMessage({
         e.preventDefault();
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             const payload = {
-                userId,
                 channelId: dm,
                 content: message,
-                user: {
-                    id: userId,
-                    username: "usernameHere",
-                },
             };
             const stringified = JSON.stringify(payload);
-            setChat((prev) => [...prev, payload]);
+            // setChat((prev) => [...prev, payload]);
             setSending(true);
             wsRef.current.send(stringified);
             await storeMessage(userId, message, dm);
