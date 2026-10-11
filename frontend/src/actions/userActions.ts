@@ -1,7 +1,7 @@
 "use server";
 
 import { drizzle } from "drizzle-orm/node-postgres";
-import { users } from "../db/schema";
+import { user } from "../db/schema";
 import z from "zod";
 import { FormState } from "./friendRequests";
 
@@ -21,9 +21,12 @@ export async function createUser(prevState: FormState, formdata: FormData) {
     }
 
     try {
-        const res = await db.insert(users).values({
-            username: safeUsername.data,
-        });
+        const res = await db
+            .insert(user)
+            .values({
+                username: safeUsername.data,
+            })
+            .returning();
 
         return {
             success: true,

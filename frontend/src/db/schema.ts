@@ -1,6 +1,6 @@
 import * as p from "drizzle-orm/pg-core";
 
-export const users = p.pgTable("users", {
+export const user = p.pgTable("users", {
     id: p.text("id").primaryKey(),
     username: p.text("username").unique().notNull(),
     name: p.text("name").notNull(),
@@ -19,25 +19,25 @@ export const friendRequests = p.pgTable("friend_requests", {
     id: p.serial("id").primaryKey(),
     createdAt: p.timestamp("created_at").defaultNow().notNull(),
     senderId: p
-        .uuid("sender_id")
+        .text("sender_id")
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
     receiverId: p
-        .uuid("receiver_id")
+        .text("receiver_id")
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
 });
 
 export const friendships = p.pgTable("friendships", {
     id: p.serial("id").primaryKey(),
     initiatorId: p
-        .uuid("initiator_id")
+        .text("initiator_id")
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
     recipientId: p
-        .uuid("recipient_id")
+        .text("recipient_id")
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
     createdAt: p.timestamp().defaultNow().notNull(),
 });
 
@@ -52,18 +52,18 @@ export const dmParticipants = p.pgTable("dm_participants", {
         .notNull()
         .references(() => directMessages.id),
     userId: p
-        .uuid("user_id")
+        .text("user_id")
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
 });
 
 export const messages = p.pgTable("messages", {
     id: p.uuid("id").primaryKey().defaultRandom(),
     channelId: p.uuid().notNull(),
     userId: p
-        .uuid()
+        .text()
         .notNull()
-        .references(() => users.id),
+        .references(() => user.id),
     content: p.text().notNull().default(""),
 });
 
@@ -113,15 +113,15 @@ export const account = p.pgTable(
             .$onUpdate(() => /* @__PURE__ */ new Date())
             .notNull(),
     },
-    (table) => [index("account_userId_idx").on(table.userId)],
+    (table) => [p.index("account_userId_idx").on(table.userId)],
 );
 
 export const verification = p.pgTable(
     "verification",
     {
         id: p.text("id").primaryKey(),
-        identifier: text("identifier").notNull(),
-        value: text("value").notNull(),
+        identifier: p.text("identifier").notNull(),
+        value: p.text("value").notNull(),
         expiresAt: p.timestamp("expires_at").notNull(),
         createdAt: p.timestamp("created_at").defaultNow().notNull(),
         updatedAt: p
@@ -130,5 +130,5 @@ export const verification = p.pgTable(
             .$onUpdate(() => /* @__PURE__ */ new Date())
             .notNull(),
     },
-    (table) => [index("verification_identifier_idx").on(table.identifier)],
+    (table) => [p.index("verification_identifier_idx").on(table.identifier)],
 );
