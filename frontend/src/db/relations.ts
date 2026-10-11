@@ -39,18 +39,19 @@ export const relations = defineRelations(schema, (r) => ({
         }),
     },
     directMessages: {
-        participants: r.many.dmParticipants(),
+        participants: r.many.dmParticipants({ alias: "dmParticipants" }),
         messages: r.many.messages({ alias: "dmAlias" }),
     },
     dmParticipants: {
         participants: r.one.directMessages({
             from: r.dmParticipants.dmId,
             to: r.directMessages.id,
-            alias: "userParticipant",
+            alias: "dmParticipants",
         }),
         user: r.one.user({
             from: r.dmParticipants.userId,
             to: r.user.id,
+            alias: "userParticipant",
         }),
     },
     messages: {
