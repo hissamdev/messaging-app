@@ -2,7 +2,8 @@ import * as p from "drizzle-orm/pg-core";
 
 export const user = p.pgTable("users", {
     id: p.text("id").primaryKey(),
-    username: p.text("username").unique().notNull(),
+    username: p.varchar("username", { length: 255 }).unique(),
+    displayUsername: p.text("display_username"),
     name: p.text("name").notNull(),
     email: p.text("email").notNull().unique(),
     emailVerified: p.boolean("email_verified").default(false).notNull(),

@@ -5,6 +5,7 @@
     "": {
       "name": "frontend",
       "dependencies": {
+        "@better-auth/drizzle-adapter": "^1.7.7",
         "@neondatabase/serverless": "^1.2.0",
         "@types/pg": "^8.23.1",
         "better-auth": "^1.7.7",

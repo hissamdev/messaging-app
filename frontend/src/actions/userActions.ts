@@ -1,42 +1,60 @@
 "use server";
 
 import { drizzle } from "drizzle-orm/node-postgres";
-import { user } from "../db/schema";
 import z from "zod";
 import { FormState } from "./friendRequests";
+import { auth } from "../lib/auth";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
+const userSchema = z.object({
+    email: z.email(),
+    password: z.string(),
+    username: z.string(),
+});
 export async function createUser(prevState: FormState, formdata: FormData) {
-    const rawUsername = formdata.get("username");
-    const safeUsername = z
-        .string()
-        .min(3, "Minimum 3 characters")
-        .safeParse(rawUsername);
-    if (!safeUsername.success) {
+    const rawForm = {
+        username: formdata.get("username"),
+        email: formdata.get("email"),
+        password: formdata.get("password"),
+    };
+
+    const safeForm = userSchema.safeParse(rawForm);
+
+    if (!safeForm.success) {
         return {
             success: false,
-            message: safeUsername.error.issues[0].message,
+            message: safeForm.error.issues[0].message,
         };
     }
 
     try {
-        const res = await db
-            .insert(user)
-            .values({
-                username: safeUsername.data,
-            })
-            .returning();
+        const data = await auth.api.signUpEmail({
+            body: {
+                email: safeForm.data.email,
+                password: safeForm.data.password,
+                username: safeForm.data.username,
+                displayUsername: safeForm.data.username,
+                name: safeForm.data.username,
+                callbackURL: "/dms",
+            },
+        });
+        if (!data) {
+            return {
+                success: false,
+                message: "Failed to sign up",
+            };
+        }
 
         return {
             success: true,
-            message: "User Created " + safeUsername.data,
+            message: "User Created " + safeForm.data.username,
         };
     } catch (err) {
         console.error(err);
         return {
             success: false,
-            message: "An error occured",
+            message: "Something went wrong, please try again later",
         };
     }
 }
